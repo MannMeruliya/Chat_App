@@ -48,7 +48,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         onPressed: () async {
           signOut();
         },
-        child: Icon(Icons.logout),
+        child: Icon(Icons.logout,color: Colors.red),
+        backgroundColor: Colors.white,
       ),
       body: Form(
         key: _formkey,
@@ -72,7 +73,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       width: MediaQuery.of(context).size.height * .2,
                       fit: BoxFit.fill,
                       imageUrl: widget.user.image,
-                      placeholder: (context, url) => CircularProgressIndicator(),
+                      placeholder: (context, url) =>
+                          CircularProgressIndicator(),
                       errorWidget: (context, url, error) =>
                           CircleAvatar(child: Icon(Icons.person)),
                     ),
@@ -81,7 +83,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     bottom: 0,
                     right: 0,
                     child: MaterialButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        _showSheet();
+                      },
                       shape: CircleBorder(),
                       color: Colors.white,
                       child: Icon(Icons.edit),
@@ -101,8 +105,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 TextFormField(
                   initialValue: widget.user.name,
                   onSaved: (value) => Api.me.name = value ?? "",
-                  validator: (value) =>
-                      value != null && value.isNotEmpty ? null : 'Required Field',
+                  validator: (value) => value != null && value.isNotEmpty
+                      ? null
+                      : 'Required Field',
                   decoration: InputDecoration(
                     hintText: "Enter Name",
                     prefixIcon: Icon(Icons.person),
@@ -117,8 +122,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 TextFormField(
                   initialValue: widget.user.about,
                   onSaved: (value) => Api.me.about = value ?? "",
-                  validator: (value) =>
-                      value != null && value.isNotEmpty ? null : 'Required Field',
+                  validator: (value) => value != null && value.isNotEmpty
+                      ? null
+                      : 'Required Field',
                   decoration: InputDecoration(
                     hintText: "About",
                     prefixIcon: Icon(Icons.info_outline),
@@ -132,18 +138,74 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    if(_formkey.currentState!.validate()) {
+                    if (_formkey.currentState!.validate()) {
                       _formkey.currentState!.save();
                       Api.updateinfo();
                     }
                   },
-                  child: Text("Save"),
+                  child: Text(
+                    "Save",
+                    style: TextStyle(color: Colors.black,fontSize: 18),
+                  ),
+                  style: ButtonStyle(
+                    fixedSize: MaterialStateProperty.all(Size(150,50)),
+                    backgroundColor: MaterialStateProperty.all(
+                      Color(0xffAED2FF).withOpacity(0.4),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  void _showSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(40), topRight: Radius.circular(40))),
+      builder: (_) {
+        return ListView(
+          shrinkWrap: true,
+          padding: EdgeInsets.all(20),
+          children: [
+            Text(
+              "Pick a Profile Picture",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * .03,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text(
+                    "Gallery",
+                    style: TextStyle(color: Colors.blue, fontSize: 17),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text(
+                    "Camera",
+                    style: TextStyle(color: Colors.blue, fontSize: 17),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * .02,
+            ),
+          ],
+        );
+      },
     );
   }
 }

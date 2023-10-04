@@ -84,7 +84,8 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () async {
           signOut();
         },
-        child: Icon(Icons.logout),
+        child: Icon(Icons.logout,color: Colors.red),
+        backgroundColor: Colors.white,
       ),
       body: StreamBuilder(
           stream: Api.getalluser(),
