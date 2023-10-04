@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fb_miner/model/APIs.dart';
 import 'package:fb_miner/model/message_model.dart';
@@ -5,6 +7,7 @@ import 'package:fb_miner/screen/homescreen.dart';
 import 'package:fb_miner/screen/loginscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
   final Chat user;
@@ -24,6 +27,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   final _formkey = GlobalKey<FormState>();
+
+  String? _image;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         onPressed: () async {
           signOut();
         },
-        child: Icon(Icons.logout,color: Colors.red),
+        child: Icon(Icons.logout, color: Colors.red),
         backgroundColor: Colors.white,
       ),
       body: Form(
@@ -65,20 +70,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   height: MediaQuery.of(context).size.height * .02,
                 ),
                 Stack(children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(
-                        MediaQuery.of(context).size.height * .1),
-                    child: CachedNetworkImage(
-                      height: MediaQuery.of(context).size.height * .2,
-                      width: MediaQuery.of(context).size.height * .2,
-                      fit: BoxFit.fill,
-                      imageUrl: widget.user.image,
-                      placeholder: (context, url) =>
-                          CircularProgressIndicator(),
-                      errorWidget: (context, url, error) =>
-                          CircleAvatar(child: Icon(Icons.person)),
-                    ),
-                  ),
+                  _image != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                              MediaQuery.of(context).size.height * .1),
+                          child: Image.file(
+                            File(_image!),
+                            height: MediaQuery.of(context).size.height * .2,
+                            width: MediaQuery.of(context).size.height * .2,
+                            fit: BoxFit.fill,
+                        )):
+
+                       ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                              MediaQuery.of(context).size.height * .1),
+                          child: CachedNetworkImage(
+                            height: MediaQuery.of(context).size.height * .2,
+                            width: MediaQuery.of(context).size.height * .2,
+                            fit: BoxFit.fill,
+                            imageUrl: widget.user.image,
+                            placeholder: (context, url) =>
+                                CircularProgressIndicator(),
+                            errorWidget: (context, url, error) =>
+                                CircleAvatar(child: Icon(Icons.person)),
+                          ),
+                        ),
                   Positioned(
                     bottom: 0,
                     right: 0,
@@ -145,10 +161,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                   child: Text(
                     "Save",
-                    style: TextStyle(color: Colors.black,fontSize: 18),
+                    style: TextStyle(color: Colors.black, fontSize: 18),
                   ),
                   style: ButtonStyle(
-                    fixedSize: MaterialStateProperty.all(Size(150,50)),
+                    fixedSize: MaterialStateProperty.all(Size(150, 50)),
                     backgroundColor: MaterialStateProperty.all(
                       Color(0xffAED2FF).withOpacity(0.4),
                     ),
@@ -185,14 +201,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    final ImagePicker picker = ImagePicker();
+                    final XFile? image =
+                        await picker.pickImage(source: ImageSource.gallery);
+                    if (image != null) {
+                      print(
+                          'image path : ${image.path} ');
+
+                     setState(() {
+                       _image = image.path;
+                     });
+
+                      Navigator.pop(context);
+                    }
+                  },
                   child: Text(
                     "Gallery",
                     style: TextStyle(color: Colors.blue, fontSize: 17),
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    final ImagePicker picker = ImagePicker();
+                    final XFile? image =
+                        await picker.pickImage(source: ImageSource.camera);
+                    if (image != null) {
+                      print(
+                          'image path : ${image.path} ');
+
+                      setState(() {
+                        _image = image.path;
+                      });
+
+                      Navigator.pop(context);
+                    }
+                  },
                   child: Text(
                     "Camera",
                     style: TextStyle(color: Colors.blue, fontSize: 17),

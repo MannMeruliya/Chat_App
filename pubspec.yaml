@@ -42,6 +42,7 @@ dependencies:
   google_sign_in:
   cached_network_image: ^3.3.0
   image_picker:
+  firebase_storage: ^11.2.8
 
 dev_dependencies:
   flutter_test:
