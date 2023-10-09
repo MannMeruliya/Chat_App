@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fb_miner/model/message_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -68,5 +70,15 @@ class Api {
     });
   }
 
+  static Future<void> updateprofilephoto(File file) async {
+    final ext = file.path.split('.').last;
+    print('Extersion : $ext');
+    final ref = storage.ref().child('profile_photo/${auth.currentUser!.uid}.$ext');
+    ref.putFile(file);
+    me.image = await ref.getDownloadURL();
+    await firestore.collection('users').doc(auth.currentUser!.uid).update({
+      'image': me.image,
+    });
+  }
 }
  

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fb_miner/model/message_model.dart';
+import 'package:fb_miner/screen/chatscreen.dart';
 import 'package:flutter/material.dart';
 
 class chatuser extends StatefulWidget {
@@ -19,7 +20,9 @@ class _chatuserState extends State<chatuser> {
       margin: EdgeInsets.only(left: 15, right: 15, top: 15, bottom: 2),
       color: Color(0xffE4F1FF),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(user: widget.user,)));
+        },
         child: ListTile(
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(MediaQuery.of(context).size.height * .3),
