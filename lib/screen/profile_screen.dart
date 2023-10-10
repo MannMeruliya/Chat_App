@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fb_miner/model/APIs.dart';
-import 'package:fb_miner/model/message_model.dart';
+import 'package:fb_miner/model/chat_model.dart';
 import 'package:fb_miner/screen/homescreen.dart';
 import 'package:fb_miner/screen/loginscreen.dart';
 import 'package:flutter/material.dart';

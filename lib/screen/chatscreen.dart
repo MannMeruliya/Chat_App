@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fb_miner/model/APIs.dart';
+import 'package:fb_miner/model/chat_model.dart';
 import 'package:fb_miner/model/message_model.dart';
+import 'package:fb_miner/screen/messagecard_screen.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -12,6 +17,9 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+
+  List<Message> list = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,6 +72,38 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Column(
         children: [
+          Expanded(
+            child: StreamBuilder(
+              stream: Api.getallmessage(),
+              builder: (context, snapshot) {
+                // if (snapshot.hasData) {
+                final data = snapshot.data?.docs;
+                print("data : ${jsonEncode(data![0].data())}");
+                // _list = data?.map((e) => Chat.fromJson(e.data())).toList() ?? [];
+                // }
+
+
+                if (list.isNotEmpty) {
+                  return ListView.builder(
+                    itemCount: list.length,
+                    itemBuilder: (context, index) {
+                      // return chatuser(user: _isSearching? _searchList[index]: _list[index]);
+                      // return Text('message :  ${list[index]}');
+                    return MessageCard();
+                    },
+                  );
+                } else {
+                  return Center(
+                    child: Text(
+                      "Say Hii!",
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
           Padding(
             padding: EdgeInsets.symmetric(
                 horizontal: MediaQuery.of(context).size.width * .02,
@@ -109,7 +149,9 @@ class _ChatScreenState extends State<ChatScreen> {
                             color: Colors.blueAccent,
                           ),
                         ),
-                        SizedBox(width: MediaQuery.of(context).size.width * .02 ,),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * .02,
+                        ),
                       ],
                     ),
                   ),

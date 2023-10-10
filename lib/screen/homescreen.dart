@@ -1,5 +1,5 @@
 import 'package:fb_miner/model/APIs.dart';
-import 'package:fb_miner/model/message_model.dart';
+import 'package:fb_miner/model/chat_model.dart';
 import 'package:fb_miner/screen/loginscreen.dart';
 import 'package:fb_miner/screen/profile_screen.dart';
 import 'package:fb_miner/screen/users.dart';

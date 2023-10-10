@@ -1,50 +1,38 @@
-class Chat {
-
-  late String image;
-  late String name;
-  late String about;
-  late String id;
-  late String isOnline;
-  late String lastActive;
-  late String createAt;
-  late String pushToken;
-  late String email;
-
-  Chat({
-    required this.image,
-    required this.name,
-    required this.about,
-    required this.id,
-    required this.isOnline,
-    required this.lastActive,
-    required this.createAt,
-    required this.pushToken,
-    required this.email,
+class Message {
+  Message({
+    required this.msg,
+    required this.read,
+    required this.fromId,
+    required this.toId,
+    required this.type,
+    required this.sent,
   });
+  late final String msg;
+  late final String read;
+  late final String fromId;
+  late final String toId;
+  late final Type type;
+  late final String sent;
 
-  Chat.fromJson(Map<String, dynamic> json){
-    image = json['image'] ?? '' ;
-    name = json['name'] ?? '';
-    about = json['about'] ?? '';
-    id = json['id'] ?? '';
-    isOnline = json['is_online'] ?? '';
-    lastActive = json['last_active'] ?? '';
-    createAt = json['create_at'] ?? '';
-    pushToken = json['push_token'] ?? '';
-    email = json['email'] ?? '';
+  Message.fromJson(Map<String, dynamic> json){
+    msg = json['msg'].toString();
+    read = json['read'].toString();
+    fromId = json['from_id'].toString();
+    toId = json['to_id'].toString();
+    type = json['type'].toString() == Type.image.name ? Type.image : Type.text ;
+    sent = json['sent'].toString();
   }
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
-    data['image'] = image;
-    data['name'] = name;
-    data['about'] = about;
-    data['id'] = id;
-    data['is_online'] = isOnline;
-    data['last_active'] = lastActive;
-    data['create_at'] = createAt;
-    data['push_token'] = pushToken;
-    data['email'] = email;
+    data['msg'] = msg;
+    data['read'] = read;
+    data['from_id'] = fromId;
+    data['to_id'] = toId;
+    data['type'] = type;
+    data['sent'] = sent;
     return data;
   }
 }
+
+enum Type {image , text}

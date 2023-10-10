@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fb_miner/model/message_model.dart';
+import 'package:fb_miner/model/chat_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -80,5 +80,12 @@ class Api {
       'image': me.image,
     });
   }
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getallmessage() {
+    return firestore
+        .collection('message')
+        .snapshots();
+  }
+
 }
  
