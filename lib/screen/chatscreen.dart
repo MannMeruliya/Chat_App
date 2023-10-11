@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fb_miner/model/APIs.dart';
 import 'package:fb_miner/model/chat_model.dart';
@@ -17,14 +15,17 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-
   List<Message> list = [];
+
+  final _textcontroller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         // flexibleSpace: _appBar(),
+        // elevation: 0,
+        backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
         title: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,7 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                icon: Icon(Icons.arrow_back)),
+                icon: const Icon(Icons.arrow_back)),
             ClipRRect(
               borderRadius: BorderRadius.circular(
                   MediaQuery.of(context).size.height * .3),
@@ -41,9 +42,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 height: MediaQuery.of(context).size.height * .05,
                 width: MediaQuery.of(context).size.height * .05,
                 imageUrl: widget.user.image,
-                placeholder: (context, url) => CircularProgressIndicator(),
+                placeholder: (context, url) => const CircularProgressIndicator(),
                 errorWidget: (context, url, error) =>
-                    CircleAvatar(child: Icon(Icons.person)),
+                    const CircleAvatar(child: Icon(Icons.person)),
               ),
             ),
             SizedBox(
@@ -70,18 +71,33 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         // backgroundColor: Colors.cyan,
       ),
+      backgroundColor: Color(0xffD2E0FB),
       body: Column(
         children: [
           Expanded(
             child: StreamBuilder(
-              stream: Api.getallmessage(),
+              stream: Api.getallmessage(widget.user),
               builder: (context, snapshot) {
-                // if (snapshot.hasData) {
+                if (snapshot.hasData) {
                 final data = snapshot.data?.docs;
-                print("data : ${jsonEncode(data![0].data())}");
-                // _list = data?.map((e) => Chat.fromJson(e.data())).toList() ?? [];
-                // }
-
+                // print("data : ${jsonEncode(data![0].data())}");
+                list = data?.map((e) => Message.fromJson(e.data())).toList() ?? [];
+                }
+                // list.clear();
+                // list.add(Message(
+                //     msg: 'hii',
+                //     read: '',
+                //     fromId: Api.auth.currentUser!.uid,
+                //     toId: 'xyz',
+                //     type: Type.text,
+                //     sent: '12:00 AM'));
+                // list.add(Message(
+                //     msg: 'hello',
+                //     read: '',
+                //     fromId: 'xyz',
+                //     toId: Api.auth.currentUser!.uid,
+                //     type: Type.text,
+                //     sent: '12:10 AM'));
 
                 if (list.isNotEmpty) {
                   return ListView.builder(
@@ -89,7 +105,9 @@ class _ChatScreenState extends State<ChatScreen> {
                     itemBuilder: (context, index) {
                       // return chatuser(user: _isSearching? _searchList[index]: _list[index]);
                       // return Text('message :  ${list[index]}');
-                    return MessageCard();
+                      return MessageCard(
+                        message: list[index],
+                      );
                     },
                   );
                 } else {
@@ -125,6 +143,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             )),
                         Expanded(
                           child: TextField(
+                            controller: _textcontroller,
                             keyboardType: TextInputType.multiline,
                             maxLines: null,
                             decoration: InputDecoration(
@@ -157,7 +176,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
                 MaterialButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    if(_textcontroller.text.isNotEmpty){
+                      Api.sendMessage(widget.user, _textcontroller.text);
+                      _textcontroller.text  = '';
+                    }
+                  },
                   minWidth: 0,
                   padding:
                       EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 4),

@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await Api.auth.signOut();
     await GoogleSignIn().signOut();
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LoginScreen()));
+        context, MaterialPageRoute(builder: (context) => const LoginScreen()));
   }
 
   @override
@@ -38,15 +38,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffAED2FF),
+        backgroundColor: const Color(0xffAED2FF),
         title: _isSearching
             ?TextField(
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             border: InputBorder.none,
             hintText: "Name",
             contentPadding: EdgeInsets.all(20),
           ),
-          style: TextStyle(fontSize: 18),
+          style: const TextStyle(fontSize: 18),
           cursorColor: Colors.indigo,
           autofocus: true,
         onChanged: (value) {
@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
             }
         },
         )
-            :Text("Chat App"),
+            :const Text("Chat App"),
         actions: [
           IconButton(
               onPressed: () {
@@ -73,10 +73,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ?Icons.close
           :Icons.search),
           ),
-          IconButton(onPressed: () {}, icon: Icon(Icons.add)),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.add)),
           IconButton(onPressed: (){
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfileScreen(user: Api.me),));
-          }, icon: Icon(Icons.edit)),
+          }, icon: const Icon(Icons.edit)),
         ],
         elevation: 1,
       ),
@@ -84,8 +84,8 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () async {
           signOut();
         },
-        child: Icon(Icons.logout,color: Colors.red),
         backgroundColor: Colors.white,
+        child: const Icon(Icons.logout,color: Colors.red),
       ),
       body: StreamBuilder(
           stream: Api.getalluser(),

@@ -29,7 +29,7 @@ class Message {
     data['read'] = read;
     data['from_id'] = fromId;
     data['to_id'] = toId;
-    data['type'] = type;
+    data['type'] = type.name;
     data['sent'] = sent;
     return data;
   }

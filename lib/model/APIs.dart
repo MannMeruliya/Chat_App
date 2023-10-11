@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fb_miner/model/chat_model.dart';
+import 'package:fb_miner/model/message_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -16,27 +17,28 @@ class Api {
 
   static Future<bool> userexists() async {
     return (await firestore
-        .collection('users')
-        .doc(auth.currentUser!.uid)
-        .get())
+            .collection('users')
+            .doc(auth.currentUser!.uid)
+            .get())
         .exists;
   }
 
   static Future<void> getselfinfo() async {
-    await firestore.collection('users').doc(auth.currentUser!.uid).get().then((user) async {
-      if(user.exists){
+    await firestore
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .get()
+        .then((user) async {
+      if (user.exists) {
         me = Chat.fromJson(user.data()!);
-      }else{
+      } else {
         await createuser().then((value) => getselfinfo());
       }
     });
   }
 
   static Future<void> createuser() async {
-    final time = DateTime
-        .now()
-        .millisecondsSinceEpoch
-        .toString();
+    final time = DateTime.now().millisecondsSinceEpoch.toString();
 
     final user = Chat(
       id: auth.currentUser!.uid,
@@ -59,21 +61,22 @@ class Api {
   static Stream<QuerySnapshot<Map<String, dynamic>>> getalluser() {
     return firestore
         .collection('users')
-        .where('id',isNotEqualTo: auth.currentUser!.uid)
+        .where('id', isNotEqualTo: auth.currentUser!.uid)
         .snapshots();
   }
 
   static Future<void> updateinfo() async {
     await firestore.collection('users').doc(auth.currentUser!.uid).update({
       'name': me.name,
-      'about':me.about,
+      'about': me.about,
     });
   }
 
   static Future<void> updateprofilephoto(File file) async {
     final ext = file.path.split('.').last;
-    print('Extersion : $ext');
-    final ref = storage.ref().child('profile_photo/${auth.currentUser!.uid}.$ext');
+    // print('Extersion : $ext');
+    final ref =
+        storage.ref().child('profile_photo/${auth.currentUser!.uid}.$ext');
     ref.putFile(file);
     me.image = await ref.getDownloadURL();
     await firestore.collection('users').doc(auth.currentUser!.uid).update({
@@ -81,11 +84,45 @@ class Api {
     });
   }
 
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getallmessage() {
+  static String getConversation(String id) =>
+      auth.currentUser!.uid.hashCode <= id.hashCode
+          ? '${auth.currentUser!.uid}_$id'
+          : '${id}_${auth.currentUser!.uid}';
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getallmessage(Chat user) {
     return firestore
-        .collection('message')
+        .collection('chats/${getConversation(user.id)}/messages/')
         .snapshots();
   }
 
+  static Future<void> sendMessage(Chat chatuser, String msg) async {
+    final time = DateTime.now().millisecondsSinceEpoch.toString();
+
+    final Message message = Message(
+        msg: msg,
+        read: '',
+        fromId: auth.currentUser!.uid,
+        toId: chatuser.id,
+        type: Type.text,
+        sent: time);
+
+    final ref =
+        firestore.collection('chats/${getConversation(chatuser.id)}/messages/');
+    await ref.doc(time).set(message.toJson());
+  }
+
+  static Future<void> readmessage(Message message) async {
+    firestore
+        .collection('chats/${getConversation(message.fromId)}/messages/')
+        .doc(message.sent)
+        .update({'read': DateTime.now().millisecondsSinceEpoch.toString()});
+  }
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getlastmessage(Chat user) {
+    return firestore
+        .collection('chats/${getConversation(user.id)}/messages/')
+        .orderBy('sent',descending: true)
+        .limit(1)
+        .snapshots();
+  }
 }
- 
