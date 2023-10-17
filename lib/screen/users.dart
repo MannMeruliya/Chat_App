@@ -48,14 +48,19 @@ class _chatuserState extends State<chatuser> {
                   height: MediaQuery.of(context).size.height * .055,
                   width: MediaQuery.of(context).size.height * .055,
                   imageUrl: widget.user.image,
-                  placeholder: (context, url) => const CircularProgressIndicator(),
+                  placeholder: (context, url) =>
+                      const CircularProgressIndicator(),
                   errorWidget: (context, url, error) =>
                       const CircleAvatar(child: Icon(Icons.person)),
                 ),
               ),
               title: Text(widget.user.name),
               subtitle: Text(
-                _message != null ? _message!.msg : widget.user.about,
+                _message != null
+                    ? _message!.type == Type.image
+                        ? 'image'
+                        : _message!.msg
+                    : widget.user.about,
                 maxLines: 1,
               ),
               trailing: _message == null
@@ -72,7 +77,8 @@ class _chatuserState extends State<chatuser> {
                       : Text(
                           MyDateUtils.getlastmessage(
                               context: context, time: _message!.sent),
-                          style: const TextStyle(color: Colors.black54, fontSize: 15),
+                          style: const TextStyle(
+                              color: Colors.black54, fontSize: 15),
                         ),
             );
           },
