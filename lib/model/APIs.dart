@@ -58,11 +58,33 @@ class Api {
         .set(user.toJson());
   }
 
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getalluser() {
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getuserID() {
     return firestore
         .collection('users')
-        .where('id', isNotEqualTo: auth.currentUser!.uid)
+        .doc(auth.currentUser!.uid)
+        .collection('my_users')
         .snapshots();
+  }
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getalluser(
+      List<String> userId) {
+    print('userid : $userId');
+
+    return firestore
+        .collection('users')
+        .where('id', whereIn: userId)
+        // .where('id', isNotEqualTo: auth.currentUser!.uid)
+        .snapshots();
+  }
+
+  static Future<void> sendfirstmessage(
+      Chat chatuser, String msg, Type type) async {
+    await firestore
+        .collection('users')
+        .doc(chatuser.id)
+        .collection('my_users')
+        .doc(auth.currentUser!.uid)
+        .set({}).then((value) => sendMessage(chatuser, msg, type));
   }
 
   static Future<void> updateinfo() async {
@@ -144,4 +166,27 @@ class Api {
     await sendMessage(user, imageurl, Type.image);
   }
 
+  static Future<bool> addChatUser(String email) async {
+    final data = await firestore
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+
+    print('data: ${data.docs}');
+
+    if (data.docs.isNotEmpty && data.docs.first.id != auth.currentUser!.uid) {
+      print('user exists: ${data.docs.first.data()}');
+
+      firestore
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .collection('my_users')
+          .doc(data.docs.first.id)
+          .set({});
+
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
